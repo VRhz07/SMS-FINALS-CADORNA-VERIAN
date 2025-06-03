@@ -1,0 +1,111 @@
+{% extends 'students/base.html' %}
+
+{% block title %}{% if subject %}Edit Subject{% else %}Add New Subject{% endif %} - Student Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2>
+            <a href="{% url 'students:subject_list' %}" class="text-decoration-none">
+                <i class="fas fa-arrow-left me-2"></i>
+            </a>
+            {% if subject %}Edit Subject{% else %}Add New Subject{% endif %}
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">{% if subject %}Edit Subject Details{% else %}New Subject Entry{% endif %}</h5>
+            </div>
+            <div class="card-body">
+                  <!-- Search Form - Moved Outside Main Form 
+                <div class="mb-3">
+                    <label class="form-label">Search Students</label>
+                    <form method="get" class="d-flex">
+                        {% if subject %}
+                            <input type="hidden" name="pk" value="{{ subject.id }}">
+                        {% endif %}
+                        <input type="text" name="student_search" class="form-control form-control-sm me-2" 
+                               placeholder="Search students..." value="{{ student_search_query }}">
+                        <button type="submit" class="btn btn-sm btn-secondary"><i class="fas fa-search"></i></button>
+                        {% if student_search_query %}
+                            {% if subject %}
+                                <a href="{% url 'students:edit_subject' subject.id %}" class="btn btn-sm btn-outline-secondary ms-2"><i class="fas fa-times"></i></a>
+                            {% else %}
+                                <a href="{% url 'students:add_subject' %}" class="btn btn-sm btn-outline-secondary ms-2"><i class="fas fa-times"></i></a>
+                            {% endif %}
+                        {% endif %}
+                    </form>
+                </div>
+                -->
+                <!-- Main Subject Form -->
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Subject Code Field -->
+                    <div class="mb-3">
+                        <label for="code" class="form-label">Subject Code</label>
+                        <input type="text" class="form-control" id="code" name="code" 
+                               placeholder="Enter subject code (e.g., CS101)" 
+                               value="{% if subject %}{{ subject.code }}{% endif %}" required>
+                    </div>
+                    
+                    <!-- Subject Name Field -->
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Subject Name</label>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               placeholder="Enter subject name" 
+                               value="{% if subject %}{{ subject.name }}{% endif %}" required>
+                    </div>
+                    
+
+                    
+                    <!-- Description Field -->
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" 
+                                 placeholder="Enter subject description">{% if subject %}{{ subject.description }}{% endif %}</textarea>
+                    </div>
+                    
+                    <!-- Student Assignment -->
+                    <div class="mb-3">
+                        <label class="form-label">Assign Students</label>
+                        <div class="card">
+                            <div class="card-header p-2 bg-light">
+                                <span class="text-muted">Select students to assign to this subject</span>
+                            </div>
+                            <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                                {% for student in all_students %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="student_{{ student.id }}" 
+                                           name="students" value="{{ student.id }}"
+                                           {% if subject and student in subject.students.all %}checked{% endif %}>
+                                    <label class="form-check-label" for="student_{{ student.id }}">
+                                        {{ student.first_name }} {{ student.last_name }} ({{ student.student_id }})
+                                    </label>
+                                </div>
+                                {% empty %}
+                                <p class="text-muted">No students available. Please add students first.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'students:subject_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i> {% if subject %}Update{% else %}Save{% endif %} Subject
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,256 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Admin Dashboard - Student Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row">
+    <!-- Students Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Students</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ students_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subjects Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Total Subjects</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ subjects_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-book fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grades Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Total Grades</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ grades_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activities Card -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Activities</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ activities_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-tasks fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Actions & Recent Activities -->
+<div class="row">
+    <!-- Administrative Actions -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary text-white">
+                <h6 class="m-0 font-weight-bold">Administrative Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'students:add_student' %}" class="btn btn-primary btn-block w-100">
+                            <i class="fas fa-user-plus me-2"></i> Add New Student
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'students:add_subject' %}" class="btn btn-success btn-block w-100">
+                            <i class="fas fa-book-medical me-2"></i> Add New Subject
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'students:add_grade' %}" class="btn btn-info btn-block w-100">
+                            <i class="fas fa-plus-circle me-2"></i> Add New Grade
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'admin:index' %}" class="btn btn-secondary btn-block w-100">
+                            <i class="fas fa-cog me-2"></i> Django Admin
+                        </a>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'students:student_list' %}" class="btn btn-outline-primary btn-block w-100">
+                            <i class="fas fa-list me-2"></i> Manage Students
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'students:subject_list' %}" class="btn btn-outline-success btn-block w-100">
+                            <i class="fas fa-list-alt me-2"></i> Manage Subjects
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-info text-white">
+                <h6 class="m-0 font-weight-bold">Recent Activities</h6>
+            </div>
+            <div class="card-body">
+                {% if recent_activities %}
+                <div class="list-group">
+                    {% for activity in recent_activities %}
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ activity.title }}</h6>
+                            <small>{{ activity.timestamp|timesince }} ago</small>
+                        </div>
+                        <p class="mb-1">{{ activity.description }}</p>
+                        {% if activity.link %}
+                        <small><a href="{{ activity.link }}">View details</a></small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> No recent activities found.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Overview -->
+<div class="row">
+    <div class="col-lg-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3 bg-dark text-white">
+                <h6 class="m-0 font-weight-bold">System Overview</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Student Distribution by Subject</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Students</th>
+                                        <th>Percentage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for subject in subjects_with_students %}
+                                    <tr>
+                                        <td>{{ subject.name }} ({{ subject.code }})</td>
+                                        <td>{{ subject.students_count }}</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar bg-success" role="progressbar" 
+                                                    aria-valuenow="{{ subject.percentage }}" aria-valuemin="0" aria-valuemax="100"
+                                                    style="width: {{ subject.percentage }}%">
+                                                    {{ subject.percentage }}%
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No subjects with students found.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Recent Grades</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Subject</th>
+                                        <th>Title</th>
+                                        <th>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for grade in recent_grades %}
+                                    <tr>
+                                        <td>{{ grade.student.first_name }} {{ grade.student.last_name }}</td>
+                                        <td>{{ grade.subject.name }}</td>
+                                        <td>
+                                            {{ grade.title }}
+                                            {% if grade.grade_type == 'ACTIVITY' %}
+                                                <span class="badge bg-primary">Activity</span>
+                                            {% elif grade.grade_type == 'QUIZ' %}
+                                                <span class="badge bg-warning text-dark">Quiz</span>
+                                            {% elif grade.grade_type == 'EXAM' %}
+                                                <span class="badge bg-danger">Exam</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ grade.score }} / {{ grade.max_score }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No recent grades found.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

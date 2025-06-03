@@ -1,0 +1,216 @@
+{% extends 'students/base.html' %}
+
+{% block title %}{{ student.first_name }} {{ student.last_name }} - Student Details{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2>
+            <a href="{% url 'students:student_list' %}" class="text-decoration-none">
+                <i class="fas fa-arrow-left me-2"></i>
+            </a>
+            Student Details
+        </h2>
+    </div>
+    <div class="col-md-6 text-md-end">
+        <a href="{% url 'admin:students_student_change' student.id %}" class="btn btn-warning">
+            <i class="fas fa-edit me-1"></i> Edit Student
+        </a>
+        <a href="{% url 'students:add_grade' %}" class="btn btn-success ms-2">
+            <i class="fas fa-plus me-1"></i> Add Grade
+        </a>
+    </div>
+</div>
+
+<!-- Student Profile Card -->
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Profile Information</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if student.profile_picture %}
+                    <img src="{{ student.profile_picture.url }}" alt="{{ student }}" class="rounded-circle img-thumbnail mb-3" style="width: 150px; height: 150px;">
+                {% else %}
+                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px; font-size: 48px;">
+                        {{ student.first_name.0 }}{{ student.last_name.0 }}
+                    </div>
+                {% endif %}
+                
+                <h3>{{ student.first_name }} {{ student.last_name }}</h3>
+                <p class="text-muted">Student ID: {{ student.student_id }}</p>
+                
+                <hr>
+                
+                <div class="text-start">
+                    <p><strong><i class="fas fa-envelope me-2"></i>Email:</strong> {{ student.email }}</p>
+                    {% if student.date_of_birth %}
+                    <p><strong><i class="fas fa-birthday-cake me-2"></i>Date of Birth:</strong> {{ student.date_of_birth|date:"F d, Y" }}</p>
+                    {% endif %}
+                    <p><strong><i class="fas fa-calendar-alt me-2"></i>Joined:</strong> {{ student.date_joined|date:"F d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Subjects Card -->
+    <div class="col-md-8 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Enrolled Subjects</h5>
+            </div>
+            <div class="card-body">
+                {% if subjects %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Subject Name</th>
+                            
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subject in subjects %}
+                            <tr>
+                                <td>{{ subject.code }}</td>
+                                <td>{{ subject.name }}</td>
+                                
+                                <td>
+                                    <button class="btn btn-sm btn-info view-grades" data-subject="{{ subject.name }}">
+                                        <i class="fas fa-chart-bar me-1"></i> Grades
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> No subjects enrolled. Add subjects from the admin panel.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grades Section -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Grade Records</h5>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm btn-light filter-grades active" data-filter="all">All</button>
+                    <button type="button" class="btn btn-sm btn-light filter-grades" data-filter="ACTIVITY">Activities</button>
+                    <button type="button" class="btn btn-sm btn-light filter-grades" data-filter="QUIZ">Quizzes</button>
+                    <button type="button" class="btn btn-sm btn-light filter-grades" data-filter="EXAM">Exams</button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if grades_by_subject %}
+                    <div class="accordion" id="gradesAccordion">
+                        {% for subject_name, grades in grades_by_subject.items %}
+                        <div class="accordion-item subject-grades" id="subject-{{ subject_name|slugify }}">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ subject_name|slugify }}">
+                                    {{ subject_name }}
+                                </button>
+                            </h2>
+                            <div id="collapse-{{ subject_name|slugify }}" class="accordion-collapse collapse show" data-bs-parent="#gradesAccordion">
+                                <div class="accordion-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Title</th>
+                                                    <th>Type</th>
+                                                    <th>Score</th>
+                                                    <th>Date</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for grade in grades %}
+                                                <tr class="grade-item" data-type="{{ grade.grade_type }}">
+                                                    <td>{{ grade.title }}</td>
+                                                    <td>
+                                                        {% if grade.grade_type == 'ACTIVITY' %}
+                                                            <span class="badge bg-primary">Activity</span>
+                                                        {% elif grade.grade_type == 'QUIZ' %}
+                                                            <span class="badge bg-warning">Quiz</span>
+                                                        {% elif grade.grade_type == 'EXAM' %}
+                                                            <span class="badge bg-danger">Exam</span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ grade.score }} / {{ grade.max_score }}</td>
+                                                    <td>{{ grade.date_recorded|date:"M d, Y" }}</td>
+                                                    <td>
+                                                        <a href="{% url 'students:edit_grade' grade.id %}" class="btn btn-sm btn-warning">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="{% url 'students:delete_grade' grade.id %}" class="btn btn-sm btn-danger">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> No grades recorded for this student.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Filter grades by type
+    $(document).ready(function() {
+        // Subject filter buttons
+        $('.view-grades').click(function() {
+            const subjectName = $(this).data('subject');
+            const subjectId = `#subject-${subjectName.toLowerCase().replace(/\s+/g, '-')}`;
+            
+            // Hide all subject sections and show the selected one
+            $('.subject-grades').hide();
+            $(subjectId).show();
+            
+            // Scroll to grades section
+            $('html, body').animate({
+                scrollTop: $(subjectId).offset().top - 100
+            }, 500);
+        });
+        
+        // Grade type filter buttons
+        $('.filter-grades').click(function() {
+            $('.filter-grades').removeClass('active');
+            $(this).addClass('active');
+            
+            const filter = $(this).data('filter');
+            
+            if (filter === 'all') {
+                $('.grade-item').show();
+            } else {
+                $('.grade-item').hide();
+                $(`.grade-item[data-type="${filter}"]`).show();
+            }
+        });
+    });
+</script>
+{% endblock %}

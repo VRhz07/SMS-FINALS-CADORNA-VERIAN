@@ -1,0 +1,141 @@
+{% extends 'students/base.html' %}
+
+{% block title %}{% if grade %}Edit Grade{% else %}Add New Grade{% endif %} - Student Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2>
+            <a href="javascript:history.back()" class="text-decoration-none">
+                <i class="fas fa-arrow-left me-2"></i>
+            </a>
+            {% if grade %}Edit Grade{% else %}Add New Grade{% endif %}
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{% if grade %}Edit Grade Details{% else %}New Grade Entry{% endif %}</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Student Selection -->
+                    <div class="mb-3">
+                        <label for="student" class="form-label">Student</label>
+                        <select name="student" id="student" class="form-select" required>
+                            <option value="">Select a student</option>
+                            {% for student_item in students %}
+                                <option value="{{ student_item.id }}" {% if grade and grade.student.id == student_item.id %}selected{% endif %}>
+                                    {{ student_item.first_name }} {{ student_item.last_name }} ({{ student_item.student_id }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Subject Selection -->
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <select name="subject" id="subject" class="form-select" required>
+                            <option value="">Select a subject</option>
+                            {% for subject_item in subjects %}
+                                <option value="{{ subject_item.id }}" {% if grade and grade.subject.id == subject_item.id %}selected{% endif %}>
+                                    {{ subject_item.name }} ({{ subject_item.code }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Grade Type Selection -->
+                    <div class="mb-3">
+                        <label for="grade_type" class="form-label">Grade Type</label>
+                        <select name="grade_type" id="grade_type" class="form-select" required>
+                            <option value="">Select type</option>
+                            {% for type_code, type_name in grade_types %}
+                                <option value="{{ type_code }}" {% if grade and grade.grade_type == type_code %}selected{% endif %}>
+                                    {{ type_name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Title Field -->
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title" 
+                               placeholder="E.g., Midterm Exam, Quiz 1, Project 1" 
+                               value="{% if grade %}{{ grade.title }}{% endif %}" required>
+                    </div>
+                    
+                    <!-- Score Fields -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="score" class="form-label">Score</label>
+                            <input type="number" class="form-control" id="score" name="score" 
+                                   placeholder="Student's score" step="0.01" min="0"
+                                   value="{% if grade %}{{ grade.score }}{% endif %}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="max_score" class="form-label">Maximum Score</label>
+                            <input type="number" class="form-control" id="max_score" name="max_score" 
+                                   placeholder="Maximum possible score" step="0.01" min="0"
+                                   value="{% if grade %}{{ grade.max_score }}{% endif %}" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Comments Field -->
+                    <div class="mb-3">
+                        <label for="comments" class="form-label">Comments (Optional)</label>
+                        <textarea class="form-control" id="comments" name="comments" rows="3" 
+                                  placeholder="Add any comments or feedback">{% if grade %}{{ grade.comments }}{% endif %}</textarea>
+                    </div>
+                    
+                    <!-- Form Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="javascript:history.back()" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> {% if grade %}Update{% else %}Save{% endif %} Grade
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // When student selection changes, fetch their subjects
+        $('#student').change(function() {
+            const studentId = $(this).val();
+            if (studentId) {
+                $.ajax({
+                    url: `/api/students/${studentId}/subjects/`,
+                    type: 'GET',
+                    success: function(data) {
+                        const subjectSelect = $('#subject');
+                        // Clear current options except the placeholder
+                        subjectSelect.find('option:not(:first)').remove();
+                        
+                        // Add new options
+                        $.each(data, function(index, subject) {
+                            subjectSelect.append(`<option value="${subject.id}">${subject.name}</option>`);
+                        });
+                    },
+                    error: function() {
+                        console.error('Error fetching subjects');
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

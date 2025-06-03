@@ -1,0 +1,154 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Dashboard - Student Management System{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Gradient Background -->
+<div class="hero-section bg-gradient-primary-to-secondary text-white rounded-3 shadow-lg mb-5 p-5">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <h1 class="display-4 fw-bold mb-3">Student Management System</h1>
+            <p class="lead mb-4">A comprehensive platform to manage student records, subjects, and academic performance with ease.</p>
+            <div class="d-flex gap-3">
+                <a href="{% url 'students:student_list' %}" class="btn btn-light btn-lg shadow-sm">
+                    <i class="fas fa-user-graduate me-2"></i>View Students
+                </a>
+                <a href="{% url 'students:subject_list' %}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-book me-2"></i>Browse Subjects
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 d-none d-lg-block text-center">
+            <i class="fas fa-graduation-cap fa-6x opacity-75 mt-4"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards Row -->
+<div class="row mb-5">
+    <!-- Stats Header -->
+    <div class="col-12 mb-3">
+        <h2 class="fw-bold text-primary"><i class="fas fa-chart-line me-2"></i>System Overview</h2>
+        <hr class="bg-primary opacity-25">
+    </div>
+    
+    <!-- Students Card -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card border-0 h-100 shadow-sm hover-card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="stat-icon-container bg-primary-subtle rounded-circle p-3">
+                        <i class="fas fa-user-graduate fa-2x text-primary"></i>
+                    </div>
+                    <span class="badge bg-primary rounded-pill fs-6">{{ students_count }}</span>
+                </div>
+                <h3 class="fw-bold h5 text-primary">Students</h3>
+                <p class="text-muted">Total registered students in the system</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0">
+                <a href="{% url 'students:student_list' %}" class="btn btn-outline-primary w-100">
+                    <i class="fas fa-list me-2"></i>Manage Students
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subjects Card -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card border-0 h-100 shadow-sm hover-card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="stat-icon-container bg-success-subtle rounded-circle p-3">
+                        <i class="fas fa-book fa-2x text-success"></i>
+                    </div>
+                    <span class="badge bg-success rounded-pill fs-6">{{ subjects_count }}</span>
+                </div>
+                <h3 class="fw-bold h5 text-success">Subjects</h3>
+                <p class="text-muted">Total subjects available for enrollment</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0">
+                <a href="{% url 'students:subject_list' %}" class="btn btn-outline-success w-100">
+                    <i class="fas fa-list me-2"></i>Browse Subjects
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grades Card -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card border-0 h-100 shadow-sm hover-card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="stat-icon-container bg-info-subtle rounded-circle p-3">
+                        <i class="fas fa-chart-bar fa-2x text-info"></i>
+                    </div>
+                    <span class="badge bg-info rounded-pill fs-6">{{ grades_count }}</span>
+                </div>
+                <h3 class="fw-bold h5 text-info">Grades</h3>
+                <p class="text-muted">Total grade records in the system</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 pt-0">
+                <a href="{% url 'students:add_grade' %}" class="btn btn-outline-info w-100">
+                    <i class="fas fa-plus me-2"></i>Add New Grade
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions Section -->
+<div class="row mb-5">
+    <div class="col-12 mb-3">
+        <h2 class="fw-bold text-dark"><i class="fas fa-bolt me-2"></i>Quick Actions</h2>
+        <hr class="bg-dark opacity-25">
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <a href="{% url 'admin:index' %}" class="card border-0 shadow-sm text-decoration-none hover-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="icon-circle bg-primary-subtle mx-auto mb-3">
+                    <i class="fas fa-cog fa-2x text-primary"></i>
+                </div>
+                <h5 class="fw-bold">Admin Panel</h5>
+                <p class="text-muted small">Access advanced system settings</p>
+            </div>
+        </a>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <a href="/api/" class="card border-0 shadow-sm text-decoration-none hover-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="icon-circle bg-secondary-subtle mx-auto mb-3">
+                    <i class="fas fa-code fa-2x text-secondary"></i>
+                </div>
+                <h5 class="fw-bold">API Browser</h5>
+                <p class="text-muted small">Explore available API endpoints</p>
+            </div>
+        </a>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <a href="{% url 'students:student_list' %}" class="card border-0 shadow-sm text-decoration-none hover-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="icon-circle bg-success-subtle mx-auto mb-3">
+                    <i class="fas fa-plus-circle fa-2x text-success"></i>
+                </div>
+                <h5 class="fw-bold">Add Student</h5>
+                <p class="text-muted small">Register a new student</p>
+            </div>
+        </a>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <a href="{% url 'students:subject_list' %}" class="card border-0 shadow-sm text-decoration-none hover-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="icon-circle bg-danger-subtle mx-auto mb-3">
+                    <i class="fas fa-book-open fa-2x text-danger"></i>
+                </div>
+                <h5 class="fw-bold">Manage Subjects</h5>
+                <p class="text-muted small">View and modify subjects</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

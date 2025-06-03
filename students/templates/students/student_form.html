@@ -1,0 +1,97 @@
+{% extends 'students/base.html' %}
+
+{% block title %}{% if student %}Edit Student{% else %}Add New Student{% endif %} - Student Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2>
+            <a href="{% url 'students:student_list' %}" class="text-decoration-none">
+                <i class="fas fa-arrow-left me-2"></i>
+            </a>
+            {% if student %}Edit Student{% else %}Add New Student{% endif %}
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{% if student %}Edit Student Details{% else %}New Student Registration{% endif %}</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Student ID Field -->
+                    <div class="mb-3">
+                        <label for="student_id" class="form-label">Student ID</label>
+                        <input type="text" class="form-control" id="student_id" name="student_id" 
+                               placeholder="Enter unique student ID" 
+                               value="{% if student %}{{ student.student_id }}{% endif %}" required>
+                    </div>
+                    
+                    <!-- Name Fields -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" 
+                                   placeholder="Enter first name" 
+                                   value="{% if student %}{{ student.first_name }}{% endif %}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" 
+                                   placeholder="Enter last name" 
+                                   value="{% if student %}{{ student.last_name }}{% endif %}" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Email Field -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               placeholder="Enter email address" 
+                               value="{% if student %}{{ student.email }}{% endif %}" required>
+                    </div>
+                    
+                    <!-- Date of Birth Field -->
+                    <div class="mb-3">
+                        <label for="date_of_birth" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" 
+                               value="{% if student %}{{ student.date_of_birth|date:'Y-m-d' }}{% endif %}">
+                    </div>
+                    
+                    <!-- Profile Picture Field -->
+                    <div class="mb-3">
+                        <label for="profile_picture" class="form-label">Profile Picture</label>
+                        {% if student and student.profile_picture %}
+                            <div class="mb-2">
+                                <img src="{{ student.profile_picture.url }}" alt="{{ student }}" class="img-thumbnail" style="max-width: 150px;">
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="remove_picture" name="remove_picture">
+                                    <label class="form-check-label" for="remove_picture">
+                                        Remove current picture
+                                    </label>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*">
+                    </div>
+                    
+                    <!-- Form Buttons -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'students:student_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times me-1"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> {% if student %}Update{% else %}Save{% endif %} Student
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
